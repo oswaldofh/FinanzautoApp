@@ -1,0 +1,17 @@
+
+.bg-body-tertiary {
+    background-color: #43a047 !important;
+    height: 82px;
+}
+.nav-link {
+    font-weight: 600;
+    color: white;
+
+}
+.logo{
+    height: 82px;
+    width: 100px;
+}
+#section-user{
+    float: right;
+}

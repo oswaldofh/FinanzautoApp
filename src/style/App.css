@@ -36,3 +36,28 @@
     transform: rotate(360deg);
   }
 }
+h4{
+  text-align: center;
+}
+.form-label {
+  text-align: center !important;
+}
+.row-button{
+  text-align: center;
+  margin-top: 18px;
+}
+#image-vehicle {
+  height: 135px;
+}
+
+.menu-cliente img{
+  height: 70%;
+}
+
+.user-nav {
+  float: right;
+}
+img{
+  object-fit: contain;
+}
+

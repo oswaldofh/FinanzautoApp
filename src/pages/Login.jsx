@@ -2,23 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../style/Login.css';
-
-import BackgroundImage from "../assets/images/background.png";
-import Logo from "../assets/images/logo.png";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { urlBase } from '../settings/urlbase';
+import BackgroundImage from "../assets/images/background.png";
+import Logo from "../assets/images/logo.png";
 
 const Login = () => {
 
-  const baseUrl = 'https://localhost:44321/api/User/Login';
   const cookies = new Cookies();
   const navigate = useNavigate();
 
   const login = async (username, password, rememberMe) => {
-
     try {
-      const response = await axios.post(baseUrl, {
+      const response = await axios.post(`${urlBase.apiUrl}/users/Login`, {
         username: username,
         password: password,
         rememberMe: rememberMe
@@ -27,14 +25,12 @@ const Login = () => {
       return response.data;
     } catch (error) {
       console.error('Error al hacer la petición POST:', error);
-      throw error;
     }
   };
 
   const [inputUsername, setInputUsername] = useState("");
   const [inputPassword, setInputPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -44,48 +40,50 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const data = await login(inputUsername, inputPassword, rememberMe);
-      let {isSuccess, result } = data;
+      const {isSuccess, result } = await login(inputUsername, inputPassword, rememberMe);
+
       if (isSuccess) {
-        
+        setLoading(false);
+
+        //sessionStorage.setItem('token', result.token);
         cookies.set('id', result.result.id, {path: '/'});
         cookies.set('firstName', result.result.firstName, {path: '/'});
         cookies.set('lastName', result.result.lastName, {path: '/'});
         cookies.set('userName', result.result.userName, {path: '/'});
         cookies.set('token', result.token, {path: '/'});
-
-        navigate('/menu');
+        cookies.set('userType', result.result.userType, {path: '/'});
+        if (result.result.userType === 1) {
+          navigate('/menu');
+        }else{
+          navigate('/menuClient');
+        }
       }
-      //console.log('Respuesta de login:', data);
-      setLoading(false);
+      
+
     } catch (error) {
       setShow(true);
-      console.error('Error de inicio de sesión:', error);
+      setLoading(false);
     }
     
   };
 
-  const handlePassword = () => {};
-
+  const handlePassword = () => {
+    navigate('/register');
+  };
 
   useEffect(()=> {
     if (cookies.get('id')) {
       navigate('/menu');
     }
-
   }, [cookies.id, navigate])
 
   return (
-    <div className="sign-in__wrapper" style={{ backgroundImage: `url(${ BackgroundImage })`}}>
-      <div className="sign-in__backdrop"></div>
+     <div className="sign-in__wrapper" style={{ backgroundImage: `url(${ BackgroundImage })`}}>
+    {/* </div><div className="sign-in__wrapper"> */}
+      {/* <div className="sign-in__backdrop"></div>  */}
       
       <Form className="shadow p-4 bg-white rounded" onSubmit={handleSubmit}>
-       
-        <img
-          className="img-thumbnail mx-auto d-block mb-2"
-          src={Logo}
-          alt="logo"
-        />
+        <img className="img-thumbnail mx-auto d-block mb-2" src={Logo} alt="logo"/>
         <div className="h4 mb-2 text-center">Sign In</div>
         
         {show ? (
@@ -103,7 +101,7 @@ const Login = () => {
         <Form.Group className="mb-2" controlId="username">
           <Form.Label>Username</Form.Label>
           <Form.Control
-            type="text"
+            type="email"
             value={inputUsername}
             placeholder="Username"
             onChange={(e) => setInputUsername(e.target.value)}
@@ -120,7 +118,7 @@ const Login = () => {
             required
           />
         </Form.Group>
-        <Form.Group className="mb-2" controlId="checkbox">
+        <Form.Group className="mb-2 mt-2" controlId="checkbox">
           <Form.Check 
             type="checkbox" 
             label="Remember me"
@@ -129,7 +127,7 @@ const Login = () => {
           />
         </Form.Group>
         {!loading ? (
-          <Button className="w-100" variant="primary" type="submit">
+          <Button className="w-100 mt-2" variant="primary" type="submit">
             Log In
           </Button>
         ) : (
@@ -137,21 +135,15 @@ const Login = () => {
             Logging In...
           </Button>
         )}
+
         <div className="d-grid justify-content-end">
-          <Button
-            className="text-muted px-0"
-            variant="link"
-            onClick={handlePassword}
-          >
-            Forgot password?
+          <Button className="text-muted px-0" variant="link" onClick={handlePassword} >
+            Registrarme
           </Button>
         </div>
       </Form>
-      <div className="w-100 mb-2 position-absolute bottom-0 start-50 translate-middle-x text-white text-center">
-        Made by Hendrik C | &copy;2024
-      </div>
     </div>
-  );
+  )
 };
 
 export default Login;

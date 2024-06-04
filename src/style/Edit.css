@@ -1,0 +1,9 @@
+.form-checkme {
+    text-align: center;
+  }
+  
+  #check-fase{
+    height: 50px !important;
+    width: 50px !important;
+    border-radius: 50px !important;
+  }

@@ -1,0 +1,9 @@
+.card-body {
+    text-align: center;
+}
+.card-title{
+    font-weight: bold;
+}
+.modal-footer {
+    text-align: center !important;
+}
